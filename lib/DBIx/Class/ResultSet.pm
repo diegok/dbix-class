@@ -1911,8 +1911,11 @@ sub pager {
   }
 
   my $attrs = $self->{attrs};
-  $self->throw_exception("Can't create pager for non-paged rs")
-    unless $self->{attrs}{page};
+  if (!defined $attrs->{page}) {
+    $self->throw_exception("Can't create pager for non-paged rs");
+  } elsif (! (0+$attrs->{page})) {
+    $self->throw_exception("Page was 0 or non-numeric -- page numbers start at 1");
+  }
   $attrs->{rows} ||= 10;
 
   # throw away the paging flags and re-run the count (possibly
